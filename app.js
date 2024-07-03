@@ -29,7 +29,7 @@ function porcentagem(x, y) {
 function calculadora() {
     console.log("Bem Vindo à Calculadora!")
     // solicitar a escolha do usuário
-    let escolha = parseInt(console.log(`
+    let escolha = parseInt(prompt(`
     1 - Soma
     2 - Subtração
     3 - Multiplicação
