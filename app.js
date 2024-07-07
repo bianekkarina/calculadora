@@ -1,177 +1,207 @@
-const prompt = require('prompt-sync')({siginit:true})
+const readline = require('readline');
 
-//vetor para armazenar os calculos
-let calculos = []
-//chamada da função principal
-exibirMenu()
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
-//função principal para exibir o menu 
+// Vetor para armazenar os cálculos
+let calculos = [];
+
+// Chamada da função principal
+exibirMenu();
+
+// Função principal para exibir o menu
 function exibirMenu() {
-    console.log(` 
+    console.log(`
         Bem Vindo ao Menu!
 
-        1 - Realizar novo cálculo
-        2 - Listar cálculos
-        3 - Atualizar cálculo
-        4 - Deletar cálculo
-        5 - Sair
+        1. Realizar novo cálculo
+        2. Listar cálculos
+        3. Atualizar cálculo
+        4. Deletar cálculo
+        5. Sair
+    `);
 
-        Escolha uma opção:
-    `)
-
-    let opcao 
-    switch(opcao) {
-        case 1:
-            calculadora()
-            break
-        case 2:
-            listarCalculos()
-            break
-        case 3:
-            atualizarCalculos()
-            break
-        case 4:
-            deletarCalculo()
-            break
-        case 5:
-            console.log('Tchaaaaaaaau')
-            return
-        default:
-            console.log('Opcção inválida! Por favor, tente novamente.')
-    }
-    exibirMenu() //chamada recursiva
+    rl.question('Escolha uma opção: ', (opcao) => {
+        switch (opcao) {
+            case '1':
+                calculadora();
+                break;
+            case '2':
+                listarCalculos();
+                exibirMenu(); // Adicionar chamada recursiva para retornar ao menu
+                break;
+            case '3':
+                atualizarCalculo();
+                break;
+            case '4':
+                deletarCalculo();
+                break;
+            case '5':
+                console.log("Tchaaaaaaaau");
+                rl.close();
+                break;
+            default:
+                console.log('\nOpção inválida! Tente novamente.');
+                exibirMenu();
+        }
+    });
 }
 
-//função principal da calculadora
+// Função principal da calculadora
 function calculadora() {
     console.log(`
-        1 - Soma
-        2 - Subtração
-        3 - Multiplicação
-        4 - Divisão
-        5 - Porcentagem
+        1. Soma
+        2. Subtração
+        3. Multiplicação
+        4. Divisão
+        5. Porcentagem
+    `);
 
-        Escolha a operação desejada: `)
-
-        let escolha 
-
+    rl.question('Escolha a operação desejada: ', (escolha) => {
         if (escolha > 0 && escolha <= 5) {
-            let numero1 = parseFloat(prompt("Digite o primeiro número: "))
-            let numero2 = parseFloat(prompt("Digite o segundo número: "))
+            rl.question('Digite o primeiro número: ', (num1) => {
+                let numero1 = parseFloat(num1);
+                rl.question('Digite o segundo número: ', (num2) => {
+                    let numero2 = parseFloat(num2);
+                    let resultado;
 
-            let resultado
-            switch(escolha) {
-                case 1: 
-                    resultado = numero1 + numero2
-                    break
-                case 2:
-                    resultado = numero1 - numero2
-                    break
-                case 3:
-                    resultado = numero1 * numero2
-                    break
-                case 4:
-                    if (numero2 !== 0) {
-                    resultado = numero1 / numero2
-                    } else {
-                        throw new Error("Divisão por zero não é permitida!")
+                    switch (escolha) {
+                        case '1':
+                            resultado = numero1 + numero2;
+                            break;
+                        case '2':
+                            resultado = numero1 - numero2;
+                            break;
+                        case '3':
+                            resultado = numero1 * numero2;
+                            break;
+                        case '4':
+                            if (numero2 !== 0) {
+                                resultado = numero1 / numero2;
+                            } else {
+                                console.log('Divisão por zero não é permitida!');
+                                return exibirMenu();
+                            }
+                            break; // Adicionar break aqui
+                        case '5':
+                            resultado = (numero1 * numero2) / 100;
+                            break;
                     }
-                    break
-                case 5:
-                    resultado = (numero1 * numero2) / 100
-                    break
-            }
 
-            let calculo = {
-                operacao: escolha,
-                num1: numero1,
-                num2: numero2,
-                resultado: resultado
-            }
-            calculos.push(calculo)
-            console.log(`Resultado: ${resultado}`)
+                    let calculo = {
+                        operacao: escolha,
+                        num1: numero1,
+                        num2: numero2,
+                        resultado: resultado
+                    };
+                    calculos.push(calculo);
+                    console.log(`Resultado: ${resultado}`);
+                    exibirMenu();
+                });
+            });
         } else {
-            throw new Error("Opção inválida! Por favor, tente novamente.")
+            console.log('Opção inválida! Tente novamente.');
+            exibirMenu();
         }
+    });
 }
 
-//função para exibir a lista de cálculos
+// Função para exibir a lista de cálculos
 function listarCalculos() {
-    console.log("Lista de cálculos:")
-    calculos.forEach((calculo, index) => {
-        console.log(`
-            ${index + 1}. Operação: ${calculo.operacao}
-            Números: ${calculo.num1}, ${calculo.num2}
-            Resultado: ${calculo.resultado}
-            `)
-    })
-}
-
-//função para atualizar um cálculo
-function atualizarCalculos() {
-    listarCalculos() 
-    let index = parseInt(prompt("Digite o número do cálculo que deseja editar: ")) - 1
-    if (index >= 0 && index <= calculos.length) {
-        console.log(`
-            1 - Soma
-            2 - Subtração
-            3 - Multiplicação
-            4 - Divisão
-            5 - Porcentagem
-
-            Escolha a nova operação: `)
-
-            let escolha
-            if (escolha > 0 && escolha <= 5) {
-                let numero1 = parseFloat(prompt("Digite o primeiro número: "))
-                let numero2 = parseFloat(prompt("Digite o segundo número: "))
-                let resultado
-
-                switch(escolha) {
-                    case 1:
-                        resultado = numero1 + numero2
-                        break
-                    case 2:
-                        resultado = numero1 - numero2
-                        break
-                    case 3:
-                        resultado = numero1 * numero2
-                        break
-                    case 4:
-                        if (numero2 !== 0) {
-                        resultado = numero1 / numero2
-                        } else {
-                            throw new Error("Divisão por zero não é permitida!")
-                        }
-                        break
-                    case 5:
-                        resultado = (numero1 * numero2) / 100
-                        break
-                }
-
-                calculos[index] = {
-                    operacao: escolha,
-                    num1: numero1,
-                    num2: numero2,
-                    resultado: resultado
-                }
-                console.log(`Cálculo atualizado. Novo resultado: ${resultado}`)
-            } else {
-                throw new Error("Opção inválida! Tente novamente.")
-            }
+    if (calculos.length === 0) {
+        console.log("Nenhum cálculo no sistema.");
     } else {
-        throw new Error("Inválido! Tente novamente.")
+        console.log('Lista de cálculos:');
+        calculos.forEach((calculo, index) => {
+            console.log(`
+                ${index + 1}. Operação: ${calculo.operacao}
+                Números: ${calculo.num1}, ${calculo.num2}
+                Resultado: ${calculo.resultado}
+            `);
+        });
     }
 }
 
-//função para deletar um calculo
-function deletarCalculo() {
-    listarCalculos()
-    let index = parseInt(prompt("Digite o número do cálculo que deseja deletar: ")) - 1
-    if (index >= 0 && index <= calculos.length) {
-        calculos.splice(index, 1)
-        console.log("Cálculo deletado com sucesso!")
+// Função para atualizar um cálculo
+function atualizarCalculo() {
+    listarCalculos();
+    rl.question("Digite o número do cálculo que deseja editar: ", (ind) => {
+        let index = parseInt(ind) - 1;
+        if (index >= 0 && index < calculos.length) {
+            console.log(`
+                1. Soma
+                2. Subtração
+                3. Multiplicação
+                4. Divisão
+                5. Porcentagem
+            `);
+
+            rl.question("Escolha a nova operação: ", (escolha) => {
+                if (escolha > 0 && escolha <= 5) { // Corrigir aqui
+                    rl.question("Digite o primeiro número: ", (num1) => {
+                        let numero1 = parseFloat(num1);
+                        rl.question("Digite o segundo número: ", (num2) => {
+                            let numero2 = parseFloat(num2);
+                            let resultado;
+
+                            switch (escolha) {
+                                case '1':
+                                    resultado = numero1 + numero2;
+                                    break;
+                                case '2':
+                                    resultado = numero1 - numero2;
+                                    break;
+                                case '3':
+                                    resultado = numero1 * numero2;
+                                    break;
+                                case '4':
+                                    if (numero2 !== 0) {
+                                        resultado = numero1 / numero2;
+                                    } else {
+                                        console.log('Divisão por zero não é permitida!');
+                                        return exibirMenu();
+                                    }
+                                    break; // Adicionar break aqui
+                                case '5':
+                                    resultado = (numero1 * numero2) / 100;
+                                    break;
+                            }
+
+                            calculos[index] = {
+                                operacao: escolha,
+                                num1: numero1,
+                                num2: numero2,
+                                resultado: resultado
+                            };
+                            console.log(`Cálculo atualizado! Novo resultado: ${resultado}`);
+                            exibirMenu();
+                        });
+                    });
+                } else {
+                    console.log('Opção inválida! Tente novamente.');
+                    exibirMenu();
+                }
+            });
         } else {
-            throw new Error("Inválido! Tente novamente.")
+            console.log("Índice inválido! Tente novamente.");
+            exibirMenu();
         }
+    });
+}
+
+// Função para deletar um cálculo
+function deletarCalculo() {
+    listarCalculos();
+    rl.question("Digite o número do cálculo que deseja deletar: ", (ind) => {
+        let index = parseInt(ind) - 1;
+        if (index >= 0 && index < calculos.length) { // Corrigir aqui
+            calculos.splice(index, 1);
+            console.log("Cálculo deletado com sucesso.");
+        } else {
+            console.log("Índice inválido! Tente novamente.");
+        }
+        exibirMenu();
+    });
 }
